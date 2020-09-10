@@ -1,0 +1,19 @@
+---
+required_packages:
+  - name: httpd
+  - name: php
+  - name: php-mysql
+  - name: php-gd
+  - name: php-xml
+  - name: mariadb-server
+  - name: mariadb
+
+application_url: "https://releases.wikimedia.org/mediawiki/1.34/mediawiki-1.34.2.tar.gz"
+destination_dir: "/var/www"
+full_app_name: "mediawiki-1.34.2"
+app_name : "mediawiki"
+httpd_dest_dir: "/etc/httpd"
+httpd_data_directory: "/var/www/mediawiki"
+httpd_dir_index_1: "index.html.var"
+httpd_dir_index_2: "index.php"
+mariadb_user_password: "MyPassword"

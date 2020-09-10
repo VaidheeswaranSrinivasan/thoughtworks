@@ -1,0 +1,56 @@
+---
+- name: "Install the required packages"
+  yum:
+    name: "{{ item.name }}"
+    state: present
+  with_items: "{{ required_packages }}"
+
+- name: "Start the mysql DB"
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: "Create a new user in the database"
+  mysql_user:
+    name: wiki@localhost
+    password: "{{ mariadb_user_password }}"
+    priv: '*.*:ALL'
+    state: present
+
+- name: "Create a database"
+  mysql_db:
+    name: wikidatabase
+    state: present
+
+- name: "Download the mediawiki application tarball"
+  unarchive:
+    src: "{{ application_url }}"
+    dest: "{{ destination_dir }}"
+    remote_src: yes
+    mode: 0644
+    owner: root
+    group: root
+
+- name: "Create link for the application"
+  file:
+    src: "{{ destination_dir }}/{{ full_app_name }}"
+    dest: "{{ destination_dir }}/{{ app_name }}"
+    owner: apache
+    group: apache
+    state: link
+
+- name: "Start the HTTPD"
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: "Configure the apache httpd conf file"
+  template:
+    src: "httpd.conf.j2"
+    dest: "{{ httpd_dest_dir }}/conf/httpd.conf"
+    owner: root
+    force: yes
+  notify:
+    - restart httpd

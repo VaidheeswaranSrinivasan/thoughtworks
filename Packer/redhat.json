@@ -1,0 +1,38 @@
+{
+    "variables": {
+      "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+      "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+	  "aws_security_token"  : "{{env `AWS_SECURITY_TOKEN`}}",
+      "aws_region"    : "eu-west-2",
+      "aws_vpc"       : "vpc-665d1e0e",
+      "aws_subnet"    : "subnet-f497c29d"
+    },
+    "provisioners": [
+        {
+          "type"              : "shell",
+          "script"            : "scripts/ansible.sh"
+        }
+      ],
+    "builders": [
+      {
+        "type": "amazon-ebs",
+        "ami_name": "Golden-AMI",
+        "ami_description": "The AMI contains the required softwares pre-installed",
+        "instance_type": "t2.micro",
+        "region": "{{user `aws_region`}}",
+        "vpc_id": "{{user `aws_vpc`}}",
+        "subnet_id": "{{user `aws_subnet`}}",
+        "source_ami_filter": {
+          "filters": {
+            "virtualization-type": "hvm",
+            "name": "RHEL-7.8_HVM_GA-20200225-x86_64-1-*",
+            "root-device-type": "ebs"
+          },
+          "owners": ["309956199498"],
+          "most_recent": true
+        },
+        
+        "ssh_username": "ec2-user"
+      }
+    ]
+}
