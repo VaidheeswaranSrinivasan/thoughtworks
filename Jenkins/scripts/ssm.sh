@@ -1,39 +1,14 @@
 #!/bin/sh
 
-function set_aws_credentials
-{
-  unset AWS_ACCESS_KEY_ID
-  unset AWS_SECRET_ACCESS_KEY
-  unset AWS_SESSION_TOKEN
-  
-  role_arn="arn:aws:iam::"${Account_Number}":role/JenkinsRole"
-  aws_credentials_json=$(aws sts assume-role --role-arn "$role_arn" --role-session-name "${Account_Number}" --region eu-west-2)
-  export AWS_ACCESS_KEY_ID=$(echo $aws_credentials_json | jq --exit-status --raw-output .Credentials.AccessKeyId)
-  export AWS_SECRET_ACCESS_KEY=$(echo $aws_credentials_json | jq --exit-status --raw-output .Credentials.SecretAccessKey)
-  export AWS_SESSION_TOKEN=$(echo $aws_credentials_json | jq --exit-status --raw-output .Credentials.SessionToken)
-}
+echo $PATH
 
-set +x
+aws s3 ls
 
-echo "--------------------------------"
-echo "Main execution begins"
-echo "--------------------------------"
-
-echo "$PATH"
-
-set_aws_credentials
-
-ssm_run_command="aws ssm send-command --document-name \"arn:aws:ssm:eu-west-2:456771736854:document/AnsiblePlaybook\" \
---targets '[$target_tags]' \
---parameters '{\"sourceType\":[\"GitHub\"],\"sourceInfo\":[\"{\\\"owner\\\":\\\"VaidheeswaranSrinivasan\\\",\\\"repository\\\":\\\"thoughtworks-project\\\"}\"],\"extravars\":[\"$ansible_extravars\"],\"tags\":[\"$ansible_tags\"],\"check\":[\"False\"],\"workingDirectory\":[\"\"],\"executionTimeout\":[\"3600\"]}' \
---comment \"$ssm_command_description\" \
+aws ssm send-command --document-name "AWS-RunRemoteScript" \
+--document-version "1" \
+--parameters '{"sourceType":["GitHub"],"sourceInfo":["{\n\"owner\" : \"VaidheeswaranSrinivasan\",\n\"repository\":\"thoughtworks\",\n\"path\":\"Ansible\"\n}"],"commandLine":["ansible-playbook playbook.yml"],"workingDirectory":[""],"executionTimeout":["3600"]}' \
+--comment "Ansible Playbook Deployment" \
 --timeout-seconds 600 \
---max-concurrency \"1\" \
---max-errors \"0\" \
---region eu-west-2"
-
-echo "--------------------------------"
-echo "$ssm_run_command"
-echo "--------------------------------"
-
-eval status=\$\("$ssm_run_command"\)
+--max-concurrency "50" \
+--max-errors "0" \
+--region eu-west-2
