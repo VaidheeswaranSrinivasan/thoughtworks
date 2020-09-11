@@ -11,18 +11,6 @@
     state: started
     enabled: yes
 
-- name: "Create a new user in the database"
-  mysql_user:
-    name: wiki@localhost
-    password: "{{ mariadb_user_password }}"
-    priv: '*.*:ALL'
-    state: present
-
-- name: "Create a database"
-  mysql_db:
-    name: wikidatabase
-    state: present
-
 - name: "Download the mediawiki application tarball"
   unarchive:
     src: "{{ application_url }}"
