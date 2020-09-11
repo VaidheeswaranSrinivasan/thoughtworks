@@ -161,7 +161,7 @@ DocumentRoot "{{ httpd_data_directory }}"
 # is requested.
 #
 <IfModule dir_module>
-    DirectoryIndex index.html "{{ httpd_dir_index_1 }}" "{{ httpd_dir_index_2 }}"
+    DirectoryIndex index.html {{ httpd_dir_index_1 }} {{ httpd_dir_index_2 }}
 </IfModule>
 
 #
