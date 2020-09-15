@@ -11,19 +11,24 @@ Please follow the below steps for deploying the mediawiki application.
 
 1. Set the AWS access and secret keys as env variables in the local machine.
 2. Run the packer build from local machine to create the golden AMI which will be used for the application server.
-```bash
-packer build redhat.json
-```
-3. Create the Jenkins server via terraform code.
-4. Configure the Jenkins and install the "Amazon EC2 Plugin". Create a keypair and place the pem key contents in "EC2 Key Pair's Private Key"
-5. Use Systems manager document "AWS-RunRemoteScript" and pass the required parameters using the Jenkins job. Use the awc cli command
-```bash
-aws ssm send-command
-```
+   ```bash
+   packer build redhat.json
+   ```
+3. Create the Jenkins server and the application server(use the golden AMI) using terraform commands
+   ```bash
+   terraform init
+   terraform plan
+   terraform apply --auto-approve
+   ```
+4. Use Systems manager document "AWS-RunRemoteScript" and pass the required parameters using the Jenkins job. Use the awc cli command
+   ```bash
+   aws ssm send-command
+   ```
+5. Provision the ALB for the application servers using terraform commands
 6. Once the jenkins job is completed successfully hit the url
-```bash
-http://<your-server-public-ip>
-```
+   ```bash
+   http://<your-alb-dns-name>
+   ```
 
 |    Actions        |  Tools Used                |
 | ----------------- | -------------------------- |
