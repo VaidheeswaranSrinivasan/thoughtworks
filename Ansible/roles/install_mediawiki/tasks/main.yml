@@ -5,11 +5,46 @@
     state: present
   with_items: "{{ required_packages }}"
 
+- name: Get Nexus user name from systems manager
+  set_fact:
+    mysql_root_pwd: "{{ lookup('aws_ssm', 'mysql_root_password', decrypt=True, region='eu-west-2' ) }}"
+
+- name: Get Nexus password from systems manager
+  set_fact:
+    mysql_user_pwd: "{{ lookup('aws_ssm', 'mysql_user_password', decrypt=True, region='eu-west-2' ) }}"
+
 - name: "Start the mysql DB"
   service:
     name: mariadb
     state: started
     enabled: yes
+
+- name: change the db root password
+  mysql_user:
+    login_user: root
+    login_password: ''
+    check_implicit_admin: yes
+    name: root
+    password: "{{ mysql_root_pwd }}"
+    priv: "*.*:ALL,GRANT"
+    host: "{{ item }}"
+  with_items:
+   - 127.0.0.1
+   - ::1
+   - localhost
+
+- name: Create the credentials file
+  template:
+    src: my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    mode: 0600
+  notify: Restart mysql
+
+- name: Create a new database
+  mysql_db:
+    name: wikidatabase
+    state: present
 
 - name: "Download the mediawiki application tarball"
   unarchive:
