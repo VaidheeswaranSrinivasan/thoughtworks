@@ -21,5 +21,9 @@ sudo pip install pymysql
 # Installing Git
 sudo yum -y install git
 
+# Installing and configuring PHP 7.x
+sudo yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm -y
+sudo yum-config-manager --enable remi-php72
+
 # Install SSM Agent
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
