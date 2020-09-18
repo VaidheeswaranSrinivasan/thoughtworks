@@ -1,6 +1,6 @@
 instance_count              = 2
 name                        = "app-server"
-ami                         = "ami-0f0626acb25ad9da1"  # Golden AMI created from packer
+ami                         = "ami-0469930d8e02bb71f"  # Golden AMI created from packer
 instance_type               = "t2.micro"
 subnet_filter               = "*public_1*"
 associate_public_ip_address = true
