@@ -5,6 +5,7 @@ required_packages:
   - name: php-mysql
   - name: php-gd
   - name: php-xml
+  - name: php-mbstring
   - name: mariadb-server
   - name: mariadb
 
